@@ -81,9 +81,17 @@ function importData() {
     alert(`Successfully imported ${importCount} of ${passengerData.length} entries`)
 }
 
-try {
-    importData()
-} catch(error) {
-    console.error(error)
-    alert(error)
+// Add button
+const datatableContainer = document.querySelector(".datatable-container")
+const button = document.createElement("button")
+button.innerText = "Import data"
+button.setAttribute("style", "font-size:1em;margin:2em 0")
+button.onclick = () => {   
+    try {
+        importData()
+    } catch(error) {
+        alert(error)
+    }   
 }
+button.onclick()
+datatableContainer.insertAdjacentElement("afterbegin", button)
