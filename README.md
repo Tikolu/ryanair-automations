@@ -16,7 +16,7 @@ For group bookings, Ryanair requires all passenger names to be entered on a form
 ### Running the script
 1. Navigate to the "Add passenger names" form
    
-   <img src=https://github.com/user-attachments/assets/95c70771-09c6-46ed-9527-a7ea70b14233 height=250px>
+   <img src=https://github.com/user-attachments/assets/7480d3a1-2a97-4fc4-9805-d452ceacddd6 height=250px>
 
 2. Clear your browser's URL bar, and type in `javascript:` - (the word "javascript" followed by a colon)
 3. Paste in the following code just after the colon, and press enter:
