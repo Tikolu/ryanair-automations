@@ -7,10 +7,14 @@ function importData() {
     // Parse CSV
     const passengerData = []
     const csvRows = csv.split("\n")
+    let splitChar = ""
+    if(csvRows[0].includes(",")) splitChar = ","
+    else if(csvRows[0].includes("\t")) splitChar = "\t"
+    else throw "Couldn't determine CSV delimeter. Ensure data is comma or tab separated"
     for(const rowIndex in csvRows) {
         const csvRow = csvRows[rowIndex]
-        const csvData = csvRow.split(",").map(d => d.trim()).filter(d => d)
-        if(csvData.length != 8) throw `Invalid CSV row ${Number(rowIndex) + 1}: ${csvRow}`
+        const csvData = csvRow.split(splitChar).map(d => d.trim()).filter(d => d)
+        if(csvData.length != 4) throw `Invalid CSV row ${Number(rowIndex) + 1}: ${csvRow}`
         passengerData.push(csvData)
     }
     
