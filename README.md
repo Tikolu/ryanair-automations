@@ -1,9 +1,35 @@
-## Automating group booking name input
+# Automating Ryanair check-in
+Ryanair's check-in forms are available at `ryanair.com/trip/flights/checkin`. This script automatically fills in these forms from CSV or TSV data.
+
+### Example data structure
+| First Name | Last Name | Nationality | Date of birth | Document type | Document number | Document country | Document expiry |
+|------------|-----------|-------------|---------------|---------------|-----------------|------------------|-----------------|
+| Jan        | Kowalski  | PL          | 2001-12-05    | Passport      | JT0001234       | PL               | 2030-03-01      |
+| Anna       | Nowak     | PL          | 1998-06-18    | ID Card       | PX0001234       | IE               | 2025-12-21      |
+| Connor     | O'Connor  | IE          | 2011-09-09    | Passport Card | PC0001234       | IE               | 2032-06-30      |
+| Katarzyna  | Wójcik    | PL          | 2003-08-26    | Passport      | EY0001234       | IE               | 2027-07-08      |
+
+### Running the script
+1. Navigate to the check-in page
+   
+   <img src=https://github.com/user-attachments/assets/12020f0a-262a-4582-ad1a-1a67000ae185 height=250px>
+
+2. Clear your browser's URL bar, and type in `javascript:` - (the word "javascript" followed by a colon)
+3. Paste in the following code just after the colon, and press enter:
+   ```js
+   function importData(){let e=prompt("Paste CSV passenger data below, without header.\n\nFormat:\nFirst name, Last name, Nationality, Date of birth, Document type, Document number, Document country, Document expiry date");if(!e)return;let t=[],n=e.split("\n"),r="";if(n[0].includes(","))r=",";else if(n[0].includes("\t"))r="\t";else throw"Couldn't determine CSV delimeter. Ensure data is comma or tab separated";for(let o in n){let l=n[o],i=l.split(r).map(e=>e.trim()).filter(e=>e);if(8!=i.length)throw`Invalid CSV row ${Number(o)+1}: ${l}`;t.push(i)}let a=document.querySelector(".paxs-form__main-content");function c(e){let t=/^(\d{4})-(\d{2})-(\d{2})$/.exec(e).slice(1);if(3!=t.length)throw`Invalid or non YYYY-MM-DD date ${e}`;return t}function u(e,t){let n=[e.querySelector("input[placeholder=YYYY]"),e.querySelector("input[placeholder=MM]"),e.querySelector("input[placeholder=DD]"),];for(let r in n){let o=n[r];o.value=t[r],o.eventListeners()[2]()}}let p=0;for(let s of t){let f;for(let d of a.children){let m=d.querySelector(".pax-info__name");if(m.innerText==`${s[0]} ${s[1]}`){f=d;break}}if(!f)throw`Unable to find "${s[0]} ${s[1]}" on page`;let y=s[2].toUpperCase();if(2!=y.length)throw`Invalid country code "${y}"`;let h=f.querySelector(".pax-info__nationality-wrapper input");h.eventListeners()[3]();let S=f.querySelector(`._autocomplete_menu__item[data-ref=${y}]`);if(!S)throw`Unable to find nationality "${y}"`;S.eventListeners()[0](),h.eventListeners()[1]();let b=c(s[3]),q=f.querySelector(".pax-info__dob-wrapper");u(q,b);let w=s[4].toUpperCase(),x=f.querySelector(".pax-info__document-type ry-dropdown");x.querySelector("button").click();let v=x.querySelectorAll("ry-dropdown-item button"),D=!1;for(let C of v)if(C.innerText.toUpperCase().includes(w)){D=!0,C.click();break}if(!D)throw`Unable to find document type "${w}"`;let L=s[5],$=f.querySelector(".pax-info__document-number input");$.value=L,$.eventListeners()[3]();let _=s[6].toUpperCase();if(2!=_.length)throw`Invalid country code "${_}"`;let g=f.querySelector(".pax-info__country-issue input");g.eventListeners()[3]();let U=f.querySelector(`._autocomplete_menu__item[data-ref=${_}]`);if(!U)throw`Unable to find document country "${_}"`;U.eventListeners()[0](),g.eventListeners()[1]();let Y=c(s[7]),k=f.querySelector(".pax-info__document-expiryDate");u(k,Y),p+=1}alert(`Successfully filled in ${p} out of ${a.childElementCount} check-in forms`)}{let e=document.querySelector(".paxs-form__main-content"),t=document.createElement("button");t.innerText="Import data",t.setAttribute("style","font-size:1em;margin:2em 0;display:block"),t.onclick=()=>{try{importData()}catch(e){alert(e)}},e.insertAdjacentElement("beforebegin",t)}
+   ```
+4. After a few seconds, an "Import data" button should appear at the top of the form - press it
+5. Paste your data into the dialog box and press enter
+
+---
+
+# Automating group booking name input
 For group bookings, Ryanair requires all passenger names to be entered on a form at `onlineform.ryanair.com/submit-names/<case-no>`. This script automatically fills in this form from CSV or TSV data.
 
 ### Example data structure
 | Title | First Name | Last Name  | Type         |
-|:-----:|:----------:|:----------:|:------------:|
+|-------|------------|------------|--------------|
 | Mr    | Jan        | Kowalski   | Adult        |
 | Ms    | Anna       | Nowak      | Teen         |
 | Mr    | Piotr      | Wiśniewski | Child        |
@@ -23,4 +49,5 @@ For group bookings, Ryanair requires all passenger names to be entered on a form
    ```js
    function importData(){let t=prompt("Paste CSV passenger data below, without header.\n\nFormat:\nTitle, First name, Last name, Type");if(!t)return;let e=[],l=t.split("\n"),o="";if(l[0].includes(","))o=",";else if(l[0].includes("\t"))o="\t";else throw"Couldn't determine CSV delimeter. Ensure data is comma or tab separated";for(let n in l){let a=l[n],i=a.split(o).map(t=>t.trim()).filter(t=>t);if(4!=i.length)throw`Invalid CSV row ${Number(n)+1}: ${a}`;e.push(i)}let r=document.querySelectorAll(".datatable-container formly-group"),s=0;for(let u in r){let c=r[u];if(!(c instanceof HTMLElement))continue;let f=e[u];if(!f)break;let d=c.querySelectorAll("input, select");d[1].value=f[1],d[2].value=f[2];let p=f[3].toUpperCase(),b=!1;for(let m of d[3].options)if(p==m.value||m.text.toUpperCase().includes(p)){if(m.disabled||d[3].disabled&&m.value!=d[3].value)throw c.scrollIntoView(),`Type "${p}" is not available for slot ${Number(u)+1}`;m.selected=!0,b=!0;break}if(!b)throw c.scrollIntoView(),`Unknown type "${p}" for slot ${Number(u)+1}`;let w=f[0].toUpperCase(),h=!1;for(let _ of d[0].options)if(w==_.value||w==_.text.toUpperCase()){if(_.disabled)throw c.scrollIntoView(),`Title "${w}" is not available for slot ${Number(u)+1}`;_.selected=!0,h=!0;break}if(!h)throw c.scrollIntoView(),`Unknown title "${w}" for slot ${Number(u)+1}`;s+=1}alert(`Successfully imported ${s} of ${e.length} entries`)}{let d=document.querySelector(".datatable-container"),b=document.createElement("button");b.innerText="Import data",b.setAttribute("style","font-size:1em;margin:2em 0"),b.onclick=()=>{try{importData()}catch(t){alert(t)}},d.insertAdjacentElement("afterbegin",b)}
    ```
-4. After a few seconds, an "Import data" button should appear at the top of the form.
+4. After a few seconds, an "Import data" button should appear at the top of the form - press it
+5. Paste your data into the dialog box and press enter
