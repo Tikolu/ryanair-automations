@@ -34,9 +34,11 @@ function importData() {
     
         // First name
         rowFields[1].value = passenger[1]
+        rowFields[1].dispatchEvent(new Event("input"))
     
         // Last name
         rowFields[2].value = passenger[2]
+        rowFields[2].dispatchEvent(new Event("input"))
     
         // Type
         const passengerType = passenger[3].toUpperCase()
@@ -56,6 +58,7 @@ function importData() {
             row.scrollIntoView()
             throw `Unknown type "${passengerType}" for slot ${Number(rowIndex) + 1}`
         }
+        rowFields[3].dispatchEvent(new Event("change"))
     
         // Title
         const passengerTitle = passenger[0].toUpperCase()
@@ -75,6 +78,7 @@ function importData() {
             row.scrollIntoView()
             throw `Unknown title "${passengerTitle}" for slot ${Number(rowIndex) + 1}`
         }
+        rowFields[0].dispatchEvent(new Event("change"))
         
         importCount += 1
     }
