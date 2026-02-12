@@ -1,26 +1,25 @@
-# Automating Ryanair check-in
-Ryanair's check-in forms are available at `ryanair.com/trip/flights/checkin`. This script automatically fills in these forms from CSV or TSV data.
+# Ryanair Check-in data import extension
+Ryanair's check-in forms are available at `ryanair.com/trip/flights/checkin`. This browser extension automatically fills in passenger details on these forms using data from a CSV or TSV file.
+
+Download the Chrome extension [here](https://chromewebstore.google.com/detail/lpagepfnedoodhcjfoipkbaibimhbcad).
+
+### Use a CSV or TSV file containing 7 columns in the following order:
+- Passenger name (must match check-in form exactly)
+- Nationality (2 letter country code, e.g. PL for Poland)
+- Date of birth (in YYYY-MM-DD format)
+- Document type (passport / id card)
+- Document number
+- Document country of issue (2 letter country code)
+- Document expiry date (in YYYY-MM-DD format)
 
 ### Example data structure
-| First Name | Last Name | Nationality | Date of birth | Document type | Document number | Document country | Document expiry |
-|------------|-----------|-------------|---------------|---------------|-----------------|------------------|-----------------|
-| Jan        | Kowalski  | PL          | 2001-12-05    | Passport      | JT0001234       | PL               | 2030-03-01      |
-| Anna       | Nowak     | PL          | 1998-06-18    | ID Card       | PX0001234       | IE               | 2025-12-21      |
-| Connor     | O'Connor  | IE          | 2011-09-09    | Passport Card | PC0001234       | IE               | 2032-06-30      |
-| Katarzyna  | Wójcik    | PL          | 2003-08-26    | Passport      | EY0001234       | IE               | 2027-07-08      |
+| Name             | Nationality | Date of birth | Document type | Document number | Document country | Document expiry |
+|------------------|-------------|---------------|---------------|-----------------|------------------|-----------------|
+| Jan Kowalski     | PL          | 2001-12-05    | Passport      | JT0001234       | PL               | 2030-03-01      |
+| Anna Nowak       | PL          | 1998-06-18    | ID Card       | PX0001234       | IE               | 2025-12-21      |
+| Connor O'Connor  | IE          | 2011-09-09    | Passport Card | PC0001234       | IE               | 2032-06-30      |
+| Katarzyna Wójcik | PL          | 2003-08-26    | Passport      | EY0001234       | IE               | 2027-07-08      |
 
-### Running the script
-1. Navigate to the check-in page
-   
-   <img src=https://github.com/user-attachments/assets/12020f0a-262a-4582-ad1a-1a67000ae185 height=250px>
-
-2. Clear your browser's URL bar, and type in `javascript:` - (the word "javascript" followed by a colon)
-3. Paste in the following code just after the colon, and press enter:
-   ```js
-   function importData(){let e=prompt("Paste CSV passenger data below, without header.\n\nFormat:\nFirst name, Last name, Nationality, Date of birth, Document type, Document number, Document country, Document expiry date");if(!e)return;let t=[],n=e.split("\n"),r="";if(n[0].includes(","))r=",";else if(n[0].includes("\t"))r="\t";else throw"Couldn't determine CSV delimeter. Ensure data is comma or tab separated";for(let o in n){let l=n[o],i=l.split(r).map(e=>e.trim()).filter(e=>e);if(8!=i.length)throw`Invalid CSV row ${Number(o)+1}: ${l}`;t.push(i)}let a=document.querySelector(".paxs-form__main-content");function c(e){let t=/^(\d{4})-(\d{2})-(\d{2})$/.exec(e).slice(1);if(3!=t.length)throw`Invalid or non YYYY-MM-DD date ${e}`;return t}function u(e,t){let n=[e.querySelector("input[placeholder=YYYY]"),e.querySelector("input[placeholder=MM]"),e.querySelector("input[placeholder=DD]"),];for(let r in n){let o=n[r];o.value=t[r],o.eventListeners()[2]()}}let p=0;for(let s of t){let f;for(let d of a.children){let m=d.querySelector(".pax-info__name");if(m.innerText==`${s[0]} ${s[1]}`){f=d;break}}if(!f)throw`Unable to find "${s[0]} ${s[1]}" on page`;let y=s[2].toUpperCase();if(2!=y.length)throw`Invalid country code "${y}"`;let h=f.querySelector(".pax-info__nationality-wrapper input");h.eventListeners()[3]();let S=f.querySelector(`._autocomplete_menu__item[data-ref=${y}]`);if(!S)throw`Unable to find nationality "${y}"`;S.eventListeners()[0](),h.eventListeners()[1]();let b=c(s[3]),q=f.querySelector(".pax-info__dob-wrapper");u(q,b);let w=s[4].toUpperCase(),x=f.querySelector(".pax-info__document-type ry-dropdown");x.querySelector("button").click();let v=x.querySelectorAll("ry-dropdown-item button"),D=!1;for(let C of v)if(C.innerText.toUpperCase().includes(w)){D=!0,C.click();break}if(!D)throw`Unable to find document type "${w}"`;let L=s[5],$=f.querySelector(".pax-info__document-number input");$.value=L,$.eventListeners()[3]();let _=s[6].toUpperCase();if(2!=_.length)throw`Invalid country code "${_}"`;let g=f.querySelector(".pax-info__country-issue input");g.eventListeners()[3]();let U=f.querySelector(`._autocomplete_menu__item[data-ref=${_}]`);if(!U)throw`Unable to find document country "${_}"`;U.eventListeners()[0](),g.eventListeners()[1]();let Y=c(s[7]),k=f.querySelector(".pax-info__document-expiryDate");u(k,Y),p+=1}alert(`Successfully filled in ${p} out of ${a.childElementCount} check-in forms`)}{let e=document.querySelector(".paxs-form__main-content"),t=document.createElement("button");t.innerText="Import data",t.setAttribute("style","font-size:1em;margin:2em 0;display:block"),t.onclick=()=>{try{importData()}catch(e){alert(e)}},e.insertAdjacentElement("beforebegin",t)}
-   ```
-4. After a few seconds, an "Import data" button should appear at the top of the form - press it
-5. Paste your data into the dialog box and press enter
 
 ---
 

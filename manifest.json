@@ -1,0 +1,25 @@
+{
+	"name": "Ryanair Check-in data import",
+	"description": "Automatically fill in passenger details on Ryanair's check-in page using data from a table",
+	"version": "1.0",
+	"manifest_version": 3,
+	"icons": {
+		"256": "icon.png"
+	},
+	"content_scripts": [
+		{
+			"js": [
+				"inject.js"
+			],
+			"matches": [
+				"https://*.ryanair.com/*/trip/flights/checkin/*"
+			]
+		}
+	],
+	"web_accessible_resources": [{
+		"resources": ["check-in.js"],
+		"matches": [
+			"https://*.ryanair.com/*"
+		]
+	}]
+}
